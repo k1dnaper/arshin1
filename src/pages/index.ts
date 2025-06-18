@@ -1,0 +1,1 @@
+export { XMLGeneratorPage } from './XMLGeneratorPage/XMLGeneratorPage'; 
