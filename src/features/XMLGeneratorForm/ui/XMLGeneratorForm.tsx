@@ -3,6 +3,7 @@ import styles from './XMLGeneratorForm.module.css';
 import type { XMLFormData, ManufactureNum } from '../../../shared/types';
 import { UVE_OPTIONS, SE_TYPE_OPTIONS, MI_TYPE_OPTIONS, METROLOGIST_OPTIONS } from '../../../shared/constants';
 import * as XLSX from 'xlsx';
+import { ExcelGeneratorForm as ExcelTabForm } from '../../ExcelGeneratorForm/ui/ExcelGeneratorForm';
 
 const initialFormData: XMLFormData = {
   mitypeNumber: '',
@@ -429,7 +430,7 @@ export const XMLGeneratorForm: FC = () => {
           <button type="button" onClick={generateXML} disabled={generationCounter >= 10}>Создать файл</button>
         </>
       ) : (
-        <div style={{padding: '40px 0', textAlign: 'center', fontSize: 24, color: '#888'}}>Генератор Excel (в разработке)</div>
+        <ExcelTabForm />
       )}
     </div>
   );
