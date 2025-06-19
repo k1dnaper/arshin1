@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import * as XLSX from 'xlsx';
-import { DynamicList, MiBlock, MiHeader, RemoveBtn } from './ManufactureNumList.styled';
+import { MiBlock, MiHeader, RemoveBtn } from './ManufactureNumList.styled';
+import { DynamicList } from '../../shared/ui/DynamicList.styled';
 
 export interface ManufactureNum {
   num: string;
@@ -46,7 +47,7 @@ export const ManufactureNumList: React.FC<Props> = ({ value, onChange }) => {
       const workbook = XLSX.read(data, { type: 'array' });
       const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
       const jsonData = XLSX.utils.sheet_to_json(firstSheet);
-      const newList: ManufactureNum[] = (jsonData as any[]).map(row => ({
+      const newList: ManufactureNum[] = (jsonData as Record<string, string>[]).map(row => ({
         num: row['Заводской номер'] || row['Номер'] || '',
         year: row['Год выпуска'] || '',
         modification: row['Модификация'] || '',

@@ -1,1 +1,0 @@
-export { XMLGeneratorForm } from './XMLGeneratorForm'; 

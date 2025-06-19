@@ -1,5 +1,6 @@
 import React from 'react';
-import { DynamicList, DynamicItem, RemoveBtn } from './SesList.styled';
+import { DynamicItem, RemoveBtn } from './SesList.styled';
+import { DynamicList } from '../../shared/ui/DynamicList.styled';
 import styled from 'styled-components';
 
 const seTypeOptions = [

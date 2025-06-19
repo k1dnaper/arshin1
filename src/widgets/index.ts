@@ -1,1 +1,1 @@
-export { XMLGeneratorForm } from './XMLGeneratorForm'; 
+// (файл теперь пустой, экспортов быть не должно) 

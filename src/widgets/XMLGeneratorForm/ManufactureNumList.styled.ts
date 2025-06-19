@@ -1,9 +1,5 @@
 import styled from 'styled-components';
 
-export const DynamicList = styled.div`
-  margin-top: 10px;
-`;
-
 export const MiBlock = styled.div`
   border: 1px solid #ddd;
   padding: 10px;

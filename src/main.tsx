@@ -1,10 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { XMLGeneratorPage } from './pages/XMLGeneratorPage/XMLGeneratorPage';
-import './index.css';
+import { GlobalStyle } from './shared/ui/GlobalStyle';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <XMLGeneratorPage />
+    <>
+      <GlobalStyle />
+      <XMLGeneratorPage />
+    </>
   </React.StrictMode>
 );

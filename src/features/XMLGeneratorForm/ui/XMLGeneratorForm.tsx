@@ -1,9 +1,26 @@
 import { type FC, useState, useEffect } from 'react';
-import styles from './XMLGeneratorForm.module.css';
 import type { XMLFormData, ManufactureNum } from '../../../shared/types';
 import { UVE_OPTIONS, SE_TYPE_OPTIONS, MI_TYPE_OPTIONS, METROLOGIST_OPTIONS } from '../../../shared/constants';
 import * as XLSX from 'xlsx';
 import { ExcelGeneratorForm as ExcelTabForm } from '../../ExcelGeneratorForm/ui/ExcelGeneratorForm';
+import {
+  Container,
+  TopPanel,
+  TopPanelBtn,
+  FormGroup,
+  FormGroupQnuk1,
+  FullWidthField,
+  DynamicList,
+  DynamicItemNarrow,
+  ManufactureNumItem,
+  RemoveBtn,
+  Grid3Col,
+  Card,
+  CardTitle,
+  CardButton,
+  SectionTitle,
+  InfoBar
+} from '../../../widgets/XMLGeneratorForm/XMLGeneratorForm.styled';
 
 const initialFormData: XMLFormData = {
   mitypeNumber: '',
@@ -66,10 +83,17 @@ export const XMLGeneratorForm: FC = () => {
   };
 
   const addManufactureNum = () => {
-    setFormData(prev => ({
-      ...prev,
-      manufactureNums: [...prev.manufactureNums, { num: '', year: '', modification: '', structure: '', additionalInfo: '' }]
-    }));
+    setFormData(prev => {
+      const last = prev.manufactureNums[0] || { num: '', year: '', modification: '', structure: '', additionalInfo: '' };
+      return {
+        ...prev,
+        manufactureNums: [
+          { ...last },
+          ...prev.manufactureNums
+        ]
+      };
+    });
+    setCollapsed(false);
   };
 
   const removeManufactureNum = (index: number) => {
@@ -88,9 +112,9 @@ export const XMLGeneratorForm: FC = () => {
         const workbook = XLSX.read(data, { type: 'array' });
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+        const jsonData = XLSX.utils.sheet_to_json(worksheet) as Record<string, string>[];
 
-        const newManufactureNums = jsonData.map((row: any) => ({
+        const newManufactureNums = jsonData.map((row: Record<string, string>) => ({
           num: row['Заводской номер'] || row['Номер'] || '',
           year: row['Год выпуска'] || '',
           modification: row['Модификация'] || '',
@@ -173,58 +197,54 @@ export const XMLGeneratorForm: FC = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
-        <button
-          className={styles.topPanelBtn}
-          style={{ background: activeTab === 'xml' ? '#28a745' : '#e0e0e0', color: activeTab === 'xml' ? '#fff' : '#222' }}
+    <Container>
+      <InfoBar>
+        <span>Автор : <a href="https://t.me/kidnaper">Кучугуров И.В.</a></span>
+        <span>Alpha v1.2 от 19.06.2025</span>
+      </InfoBar>
+      <TopPanel>
+        <TopPanelBtn
+          active={activeTab === 'xml'}
           onClick={() => setActiveTab('xml')}
         >
           Генератор XML
-        </button>
-        <button
-          className={styles.topPanelBtn}
-          style={{ background: activeTab === 'excel' ? '#007bff' : '#e0e0e0', color: activeTab === 'excel' ? '#fff' : '#222' }}
+        </TopPanelBtn>
+        <TopPanelBtn
+          active={activeTab === 'excel'}
           onClick={() => setActiveTab('excel')}
         >
           Генератор Excel
-        </button>
-      </div>
+        </TopPanelBtn>
+      </TopPanel>
       {activeTab === 'xml' ? (
         <>
-          <p>Автор : <a href="https://t.me/kidnaper">Кучугуров И.В.</a></p>
-          <p>Alpha v1.1 от 18.06.2025</p>
-          <h2>Генератор массовой загрузки МИЦ</h2>
-          <div className={styles.formGroup} style={{marginBottom: '20px'}}>
-            <div className={styles.topPanel}>
-              <button type="button" className={styles.topPanelBtn} onClick={addManufactureNum}>Добавить номер СИ</button>
-              <button type="button" className={styles.topPanelBtn} onClick={() => document.getElementById('excelFile')?.click()}>Загрузить из Excel</button>
-              <button type="button" className={styles.topPanelBtn} onClick={clearAllFields}>Очистить все поля</button>
-              <button type="button" className={styles.topPanelBtn} onClick={() => setCollapsed(prev => !prev)}>
+          <h2>Генератор массовой загрузки </h2>
+          <FormGroup>
+            <TopPanel>
+              <TopPanelBtn type="button" onClick={addManufactureNum}>Добавить номер СИ</TopPanelBtn>
+              <TopPanelBtn type="button" onClick={() => document.getElementById('excelFile')?.click()}>Загрузить из Excel</TopPanelBtn>
+              <TopPanelBtn type="button" onClick={clearAllFields}>Очистить все поля</TopPanelBtn>
+              <TopPanelBtn type="button" onClick={() => setCollapsed(prev => !prev)}>
                 {collapsed ? 'Развернуть все номера СИ' : 'Свернуть все номера СИ'}
-              </button>
-              <input
-                type="file"
-                id="excelFile"
-                accept=".xlsx, .xls"
-                style={{ display: 'none' }}
-                onChange={handleExcelUpload}
-              />
-            </div>
-            <div className={styles.dynamicList}>
+              </TopPanelBtn>
+            </TopPanel>
+            <input type="file" id="excelFile" style={{ display: 'none' }} onChange={handleExcelUpload} />
+            <DynamicList>
               {formData.manufactureNums.map((num, index) => (
-                <div key={index} className={styles.dynamicItem} style={{display: collapsed ? 'none' : 'flex'}}>
-                  <div><input type="text" placeholder="Номер" value={num.num} onChange={e => handleManufactureNumChange(index, 'num', e.target.value)} /></div>
-                  <div><input type="text" placeholder="Год выпуска" value={num.year} onChange={e => handleManufactureNumChange(index, 'year', e.target.value)} /></div>
-                  <div><input type="text" placeholder="Модификация" value={num.modification} onChange={e => handleManufactureNumChange(index, 'modification', e.target.value)} /></div>
-                  <div><input type="text" placeholder="Состав СИ" value={num.structure} onChange={e => handleManufactureNumChange(index, 'structure', e.target.value)} /></div>
-                  <div><input type="text" placeholder="Прочие сведения" value={num.additionalInfo} onChange={e => handleManufactureNumChange(index, 'additionalInfo', e.target.value)} /></div>
-                  <button className={styles.removeBtn} type="button" onClick={() => removeManufactureNum(index)}>Удалить</button>
-                </div>
+                !collapsed && (
+                  <ManufactureNumItem key={index} $highlight={index === 0}>
+                    <div><input type="text" placeholder="Номер" value={num.num} onChange={e => handleManufactureNumChange(index, 'num', e.target.value)} /></div>
+                    <div><input type="text" placeholder="Год выпуска" value={num.year} onChange={e => handleManufactureNumChange(index, 'year', e.target.value)} /></div>
+                    <div><input type="text" placeholder="Модификация" value={num.modification} onChange={e => handleManufactureNumChange(index, 'modification', e.target.value)} /></div>
+                    <div><input type="text" placeholder="Состав СИ" value={num.structure} onChange={e => handleManufactureNumChange(index, 'structure', e.target.value)} /></div>
+                    <div><input type="text" placeholder="Прочие сведения" value={num.additionalInfo} onChange={e => handleManufactureNumChange(index, 'additionalInfo', e.target.value)} /></div>
+                    <RemoveBtn type="button" onClick={() => removeManufactureNum(index)}>Удалить</RemoveBtn>
+                  </ManufactureNumItem>
+                )
               ))}
-            </div>
-          </div>
-          <div className={styles.formGroup_qnuk1}>
+            </DynamicList>
+          </FormGroup>
+          <FormGroupQnuk1>
             <div>
               <label htmlFor="mitypeNumber">Номер описания типа:</label>
               <input
@@ -296,10 +316,10 @@ export const XMLGeneratorForm: FC = () => {
                 {METROLOGIST_OPTIONS.map(name => (<option key={name} value={name} />))}
               </datalist>
             </div>
-          </div>
-          <div className={styles.formGroup}>
+          </FormGroupQnuk1>
+          <FormGroup>
             <label>Условия поверки</label>
-            <div className={styles.formGroup_qnuk1}>
+            <FormGroupQnuk1>
               <div>
                 <label htmlFor="temperature">Температура (°C):</label>
                 <input id="temperature" type="text" value={formData.conditions.temperature} onChange={e => handleConditionsChange('temperature', e.target.value)} required />
@@ -312,19 +332,20 @@ export const XMLGeneratorForm: FC = () => {
                 <label htmlFor="humidity">Влажность (%):</label>
                 <input id="humidity" type="text" value={formData.conditions.humidity} onChange={e => handleConditionsChange('humidity', e.target.value)} required />
               </div>
-              <div className={styles.fullWidthField}>
+              <FullWidthField>
                 <label htmlFor="other">Прочие условия:</label>
                 <input id="other" type="text" value={formData.conditions.other} onChange={e => handleConditionsChange('other', e.target.value)} required />
-              </div>
-            </div>
-          </div>
-          <div className={styles.formGroup_qnuk1}>
-            <div>
-              <label>Эталоны, применяемые при поверке</label>
-              <button type="button" onClick={addUve}>Добавить Эталон</button>
-              <div className={styles.dynamicList}>
+              </FullWidthField>
+            </FormGroupQnuk1>
+          </FormGroup>
+          <SectionTitle>Эталоны, применяемые при поверке</SectionTitle>
+          <Grid3Col>
+            <Card>
+              <CardButton onClick={addUve}>Добавить Эталон</CardButton>
+              <CardTitle>Выберите эталон</CardTitle>
+              <DynamicList>
                 {formData.uve.map((item, idx) => (
-                  <div key={idx} className={styles.dynamicItemNarrow}>
+                  <DynamicItemNarrow key={idx}>
                     <select value={item.number} onChange={e => {
                       const newUve = [...formData.uve];
                       newUve[idx] = { number: e.target.value };
@@ -343,17 +364,17 @@ export const XMLGeneratorForm: FC = () => {
                         handleInputChange('uve', newUve);
                       }} />
                     )}
-                    <button className={styles.removeBtn} type="button" onClick={() => removeUve(idx)}>Удалить</button>
-                  </div>
+                    <RemoveBtn type="button" onClick={() => removeUve(idx)}>Удалить</RemoveBtn>
+                  </DynamicItemNarrow>
                 ))}
-              </div>
-            </div>
-            <div>
-              <label>Стандартные образцы, применяемые при поверке</label>
-              <button type="button" onClick={addSes}>Добавить образец</button>
-              <div className={styles.dynamicList}>
+              </DynamicList>
+            </Card>
+            <Card>
+              <CardButton onClick={addSes}>Добавить образец</CardButton>
+              <CardTitle>Выберите СО</CardTitle>
+              <DynamicList>
                 {formData.ses.map((item, idx) => (
-                  <div key={idx} className={styles.dynamicItemNarrow}>
+                  <DynamicItemNarrow key={idx}>
                     <select value={item.typeNum} onChange={e => {
                       const newSes = [...formData.ses];
                       newSes[idx] = { ...item, typeNum: e.target.value };
@@ -387,17 +408,17 @@ export const XMLGeneratorForm: FC = () => {
                       newSes[idx] = { ...item, metroChars: e.target.value };
                       handleInputChange('ses', newSes);
                     }} />
-                    <button className={styles.removeBtn} type="button" onClick={() => removeSes(idx)}>Удалить</button>
-                  </div>
+                    <RemoveBtn type="button" onClick={() => removeSes(idx)}>Удалить</RemoveBtn>
+                  </DynamicItemNarrow>
                 ))}
-              </div>
-            </div>
-            <div>
-              <label>СИ, применяемые при поверке</label>
-              <button type="button" onClick={addMi}>Добавить СИ</button>
-              <div className={styles.dynamicList}>
+              </DynamicList>
+            </Card>
+            <Card>
+              <CardButton onClick={addMi}>Добавить СИ</CardButton>
+              <CardTitle>Выберите СИ</CardTitle>
+              <DynamicList>
                 {formData.mis.map((item, idx) => (
-                  <div key={idx} className={styles.dynamicItemNarrow}>
+                  <DynamicItemNarrow key={idx}>
                     <select value={item.typeNum} onChange={e => {
                       const newMis = [...formData.mis];
                       newMis[idx] = { ...item, typeNum: e.target.value };
@@ -421,17 +442,17 @@ export const XMLGeneratorForm: FC = () => {
                       newMis[idx] = { ...item, manufactureNum: e.target.value };
                       handleInputChange('mis', newMis);
                     }} />
-                    <button className={styles.removeBtn} type="button" onClick={() => removeMi(idx)}>Удалить</button>
-                  </div>
+                    <RemoveBtn type="button" onClick={() => removeMi(idx)}>Удалить</RemoveBtn>
+                  </DynamicItemNarrow>
                 ))}
-              </div>
-            </div>
-          </div>
+              </DynamicList>
+            </Card>
+          </Grid3Col>
           <button type="button" onClick={generateXML} disabled={generationCounter >= 10}>Создать файл</button>
         </>
       ) : (
         <ExcelTabForm />
       )}
-    </div>
+    </Container>
   );
 }; 

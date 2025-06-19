@@ -1,12 +1,8 @@
 import React from 'react';
-import { DynamicList, DynamicItem, RemoveBtn } from './UveList.styled';
+import { DynamicItem, RemoveBtn } from './UveList.styled';
+import { DynamicList } from '../../shared/ui/DynamicList.styled';
 import styled from 'styled-components';
-
-const uveOptions = [
-  { value: '68284.17.1Р.00843077', title: 'Микрогаз-ФМ12' },
-  { value: '68336.17.1Р.00785456', title: 'ИМ-ГП-108-М-Е (HCl)' },
-  { value: '68336.17.1Р.00785455', title: 'ИМ-ГП-08-М-Г1 (Cl2)' },
-];
+import { UVE_OPTIONS } from '../../shared/constants';
 
 const StyledSelect = styled.select`
   width: auto;
@@ -49,7 +45,7 @@ export const UveList: React.FC<Props> = ({ value, onChange }) => {
         {value.map((item, idx) => (
           <DynamicItem key={idx}>
             <StyledSelect
-              value={uveOptions.some(opt => opt.value === item.number) ? item.number : 'other'}
+              value={UVE_OPTIONS.some(opt => opt.value === item.number) ? item.number : 'other'}
               onChange={e => {
                 if (e.target.value === 'other') {
                   handleChange(idx, '');
@@ -59,12 +55,12 @@ export const UveList: React.FC<Props> = ({ value, onChange }) => {
               }}
             >
               <option value="">Выберите эталон</option>
-              {uveOptions.map(opt => (
-                <option key={opt.value} value={opt.value} title={opt.title}>{opt.value}</option>
+              {UVE_OPTIONS.map((opt: { value: string; title?: string }) => (
+                <option key={opt.value} value={opt.value} title={opt.title || opt.value}>{opt.value}</option>
               ))}
               <option value="other">Другое...</option>
             </StyledSelect>
-            {(!uveOptions.some(opt => opt.value === item.number)) && (
+            {(!UVE_OPTIONS.some(opt => opt.value === item.number)) && (
               <input
                 type="text"
                 placeholder="Введите номер эталона"

@@ -1,5 +1,6 @@
 import React from 'react';
-import { DynamicList, DynamicItem, RemoveBtn } from './MiList.styled';
+import { DynamicList } from '../../shared/ui/DynamicList.styled';
+import { RemoveBtn } from './MiList.styled';
 import styled from 'styled-components';
 
 const miTypeOptions = [
@@ -61,7 +62,7 @@ export const MiList: React.FC<Props> = ({ value, onChange }) => {
       <button type="button" onClick={handleAdd}>Добавить СИ</button>
       <DynamicList>
         {value.map((item, idx) => (
-          <DynamicItem key={idx}>
+          <div key={idx}>
             <StyledSelect
               value={miTypeOptions.some(opt => opt.value === item.typeNum) ? item.typeNum : 'other'}
               onChange={e => {
@@ -93,7 +94,7 @@ export const MiList: React.FC<Props> = ({ value, onChange }) => {
               onChange={e => handleChange(idx, 'manufactureNum', e.target.value)}
             />
             <RemoveBtn type="button" onClick={() => handleRemove(idx)}>Удалить</RemoveBtn>
-          </DynamicItem>
+          </div>
         ))}
       </DynamicList>
     </div>
