@@ -1,4 +1,4 @@
-import { XMLGeneratorForm } from '../../widgets/XMLGeneratorForm/XMLGeneratorForm';
+import { XMLGeneratorForm } from '../../features/XMLGeneratorForm/ui/XMLGeneratorForm';
 
 export const XMLGeneratorPage = () => {
   return <XMLGeneratorForm />;
